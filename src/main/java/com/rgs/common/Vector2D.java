@@ -1,6 +1,6 @@
 package com.rgs.common;
 
-public class Vector2D {
+public class Vector2D implements IVector {
 
     private final double x, y, length;
 
@@ -18,12 +18,23 @@ public class Vector2D {
         return y;
     }
 
+    @Override
     public double getLength() {
         return this.length;
     }
 
+    @Override
     public Vector2D normalize() {
         return new Vector2D(x / this.length, y / this.length);
+    }
+
+    @Override
+    public Vector2D scale(double scale) {
+        return new Vector2D(x * scale, y * scale);
+    }
+
+    public static Vector2D of(double x, double y) {
+        return new Vector2D(x, y);
     }
 
     @Override
