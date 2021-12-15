@@ -7,7 +7,9 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 import com.rgs.common.GameReadyPanel;
+import com.rgs.common.Tri;
 import com.rgs.common.Vector3D;
+import com.rgs.common.Vector3DUtils;
 
 public class Camera {
 
@@ -42,8 +44,6 @@ public class Camera {
         viewingPlaneConstant = this.direction.dot(viewingPlanePoint);
 
         System.out.println("viewing plane constant: " + viewingPlaneConstant);
-
-
     }
 
     public Vector3D vectorTo(Vector3D point) {
@@ -128,6 +128,18 @@ public class Camera {
         drawPoint(g, new Vector3D(1.5, 0, 0));
     }
 
+    public void drawTris(Graphics g) {
+        g.setColor(Color.YELLOW);
+        for(Tri tri : TrisInWorld.getTris()) {
+            System.out.println(tri.getP0());
+            System.out.println(tri.getP1());
+            System.out.println(tri.getP2());
+            drawLineBetweenPoints(g, tri.getP0(), tri.getP1());
+            drawLineBetweenPoints(g, tri.getP1(), tri.getP2());
+            drawLineBetweenPoints(g, tri.getP2(), tri.getP0());
+        }
+    }
+
     public void drawVectorsAsVertices(Graphics g) {
 
         g.setColor(Color.WHITE);
@@ -137,7 +149,14 @@ public class Camera {
         }
     }
 
-    public void drawPoint(Graphics g, Vector3D point) {
+    private void drawLineBetweenPoints(Graphics g, Vector3D v0, Vector3D v1) {
+        System.out.println("draw between: " + v0 + " -> " + v1);
+        // Draw pixels between points, including a pixel at each point
+        IntStream.range(0, 11)
+                 .forEach(i -> drawPoint(g, Vector3DUtils.lerp(v0, v1, i * .1)));
+    }
+
+    private void drawPoint(Graphics g, Vector3D point) {
 
         viewingPlaneIntersectionToPoint(point);
         Vector3D diff = point.subtract(this.position);
@@ -156,21 +175,22 @@ public class Camera {
         //c_x * (c_y * z + s_y * (s_z * y + c_z * x)) - s_x * (c_z * y - s_z * x)
         double transformedZ = cos * (cos * diff.getZ() + sin * (sin * diff.getY() + cos * diff.getX())) - sin * (cos * diff.getY() - sin * diff.getX());
 
-        //System.out.println("diff:        (" + diff.getX() + ", " + diff.getY() + ", " + diff.getZ() + ")");
-        //System.out.println("transformed: (" + transformedX + ", " + transformedY + ", " + transformedZ + ")");
+        System.out.println("point:       (" + point.getX() + ", " + point.getY() + ", " + point.getZ() + ")");
+        System.out.println("transformed: (" + transformedX + ", " + transformedY + ", " + transformedZ + ")");
 
         double displayX = (viewingPlanePoint.getZ() / transformedZ) * transformedX + viewingPlanePoint.getX();
         double displayY = (viewingPlanePoint.getZ() / transformedZ) * transformedY + viewingPlanePoint.getY();
 
-        System.out.println("display at: (" + displayX + ", " + displayY + ")");
+        //System.out.println("display at: (" + displayX + ", " + displayY + ")");
 
+        // TODO configurable/dynamic offsets
         int xOffset = 400 /*panel.getWidth()*/ / 2;
         int yOffset = 400 /*panel.getHeight()*/ / 2;
 
-        int finalX = 350 + (int)(displayX * 100);
-        int finalY = 650 - (int)(displayY * 100);
+        int finalX = 425 + (int)(displayX * 100);
+        int finalY = 725 - (int)(displayY * 100);
 
-        System.out.println("final: (" + finalX + ", " + finalY + ")");
+        //System.out.println("final: (" + finalX + ", " + finalY + ")");
 
         g.drawLine(finalX,
                    finalY,

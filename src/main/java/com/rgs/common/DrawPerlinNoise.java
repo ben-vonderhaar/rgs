@@ -3,7 +3,7 @@ package com.rgs.common;
 import static com.rgs.common.PerlinNoiseDistribution.gradientAt;
 import static com.rgs.common.PerlinNoiseDistribution.permFromVector2D;
 import static com.rgs.common.Vector2DUtils.dotProduct;
-import static com.rgs.common.Vector2DUtils.lerp;
+import static com.rgs.common.Vector2DUtils.lerpClamped;
 import static com.rgs.common.Vector2DUtils.smoothstepValue;
 
 import java.awt.*;
@@ -128,12 +128,12 @@ public class DrawPerlinNoise extends GameReadyPanel {
         Vector2D lerpSmoothingVector = new Vector2D(smoothstepValue(percentIntoBoundingBoxX),
                                                     smoothstepValue(percentIntoBoundingBoxY));
 
-        // lerp stage 1
-        double l0 = lerp(dotProduct(c0, p0), dotProduct(c1, p1), lerpSmoothingVector.getY());
-        double l1 = lerp(dotProduct(c2, p2), dotProduct(c3, p3), lerpSmoothingVector.getY());
+        // lerpClamped stage 1
+        double l0 = Vector2DUtils.lerpClamped(dotProduct(c0, p0), dotProduct(c1, p1), lerpSmoothingVector.getY());
+        double l1 = Vector2DUtils.lerpClamped(dotProduct(c2, p2), dotProduct(c3, p3), lerpSmoothingVector.getY());
 
-        // lerp stage 2
-        double l2 = lerp(l0, l1, lerpSmoothingVector.getX());
+        // lerpClamped stage 2
+        double l2 = Vector2DUtils.lerpClamped(l0, l1, lerpSmoothingVector.getX());
 
         drawGrayscalePixel(g, v, l2);
     }

@@ -28,13 +28,17 @@ public class Vector2DUtils {
         return v0.getX() * v1.getX() + v0.getY() * v1.getY();
     }
 
-    public static Vector2D lerp(Vector2D v0, Vector2D v1, double t) {
-        return new Vector2D(lerp(v0.getX(), v1.getX(), t),
-                            lerp(v0.getY(), v1.getY(), t));
+    public static Vector2D lerpClamped(Vector2D v0, Vector2D v1, double t) {
+        return new Vector2D(lerpClamped(v0.getX(), v1.getX(), t),
+                            lerpClamped(v0.getY(), v1.getY(), t));
+    }
+
+    public static double lerpClamped(double d0, double d1, double t) {
+        return Math.min(1, Math.max(-1, (1 - t) * d0 + t * d1));
     }
 
     public static double lerp(double d0, double d1, double t) {
-        return Math.min(1, Math.max(-1, (1 - t) * d0 + t * d1));
+        return (1 - t) * d0 + t * d1;
     }
 
     public static double smoothstep(double d0, double d1, double t) {
