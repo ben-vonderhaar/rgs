@@ -2,11 +2,9 @@ package com.rgs.render3d;
 
 import java.awt.*;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-import com.rgs.common.GameReadyPanel;
 import com.rgs.common.Tri;
 import com.rgs.common.Vector3D;
 import com.rgs.common.Vector3DUtils;
@@ -20,6 +18,8 @@ public class Camera {
 
     private Vector3D viewingPlanePoint;
     private double viewingPlaneConstant;
+
+    private int tempTranslationX = 0, tempTranslationY = 0;
 
     public Camera(Vector3D position, Vector3D direction, double focalLength) {
 
@@ -131,9 +131,6 @@ public class Camera {
     public void drawTris(Graphics g) {
         g.setColor(Color.YELLOW);
         for(Tri tri : TrisInWorld.getTris()) {
-            System.out.println(tri.getP0());
-            System.out.println(tri.getP1());
-            System.out.println(tri.getP2());
             drawLineBetweenPoints(g, tri.getP0(), tri.getP1());
             drawLineBetweenPoints(g, tri.getP1(), tri.getP2());
             drawLineBetweenPoints(g, tri.getP2(), tri.getP0());
@@ -150,7 +147,6 @@ public class Camera {
     }
 
     private void drawLineBetweenPoints(Graphics g, Vector3D v0, Vector3D v1) {
-        System.out.println("draw between: " + v0 + " -> " + v1);
         // Draw pixels between points, including a pixel at each point
         IntStream.range(0, 11)
                  .forEach(i -> drawPoint(g, Vector3DUtils.lerp(v0, v1, i * .1)));
@@ -159,7 +155,7 @@ public class Camera {
     private void drawPoint(Graphics g, Vector3D point) {
 
         viewingPlaneIntersectionToPoint(point);
-        Vector3D diff = point.subtract(this.position);
+        Vector3D diff = point.subtract(this.position.add(Vector3D.of(this.tempTranslationX, -1 * this.tempTranslationY, 0)));
 
         // Assuming looking straight forward aka (0,0,0) direction vector
         // Accommodating for direction needs component-specific cos/sin calcs
@@ -175,13 +171,8 @@ public class Camera {
         //c_x * (c_y * z + s_y * (s_z * y + c_z * x)) - s_x * (c_z * y - s_z * x)
         double transformedZ = cos * (cos * diff.getZ() + sin * (sin * diff.getY() + cos * diff.getX())) - sin * (cos * diff.getY() - sin * diff.getX());
 
-        System.out.println("point:       (" + point.getX() + ", " + point.getY() + ", " + point.getZ() + ")");
-        System.out.println("transformed: (" + transformedX + ", " + transformedY + ", " + transformedZ + ")");
-
         double displayX = (viewingPlanePoint.getZ() / transformedZ) * transformedX + viewingPlanePoint.getX();
         double displayY = (viewingPlanePoint.getZ() / transformedZ) * transformedY + viewingPlanePoint.getY();
-
-        //System.out.println("display at: (" + displayX + ", " + displayY + ")");
 
         // TODO configurable/dynamic offsets
         int xOffset = 400 /*panel.getWidth()*/ / 2;
@@ -190,12 +181,22 @@ public class Camera {
         int finalX = 425 + (int)(displayX * 100);
         int finalY = 725 - (int)(displayY * 100);
 
-        //System.out.println("final: (" + finalX + ", " + finalY + ")");
-
         g.drawLine(finalX,
                    finalY,
                    finalX,
                    finalY);
+    }
+
+    public void setInProgressTranslation(int translationX, int translationY) {
+        this.tempTranslationX = (int) (translationX / 50.0);
+        this.tempTranslationY = (int) (translationY / 50.0);
+    }
+
+    public void clearInProgressTranslation() {
+        this.position = this.position.add(Vector3D.of(this.tempTranslationX, -1 * tempTranslationY, 0));
+
+        this.tempTranslationX = 0;
+        this.tempTranslationY = 0;
     }
 
     // TODO find intersection of resulting vector and a plane

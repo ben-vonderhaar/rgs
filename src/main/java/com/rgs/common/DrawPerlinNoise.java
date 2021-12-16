@@ -3,7 +3,6 @@ package com.rgs.common;
 import static com.rgs.common.PerlinNoiseDistribution.gradientAt;
 import static com.rgs.common.PerlinNoiseDistribution.permFromVector2D;
 import static com.rgs.common.Vector2DUtils.dotProduct;
-import static com.rgs.common.Vector2DUtils.lerpClamped;
 import static com.rgs.common.Vector2DUtils.smoothstepValue;
 
 import java.awt.*;
@@ -29,6 +28,8 @@ public class DrawPerlinNoise extends GameReadyPanel {
     private final JTextField gridSizeDisplay, xOffsetScaleDisplay, yOffsetScaleDisplay;
 
     public DrawPerlinNoise() {
+        super();
+
         gridSizeDisplay = new JTextField(String.valueOf(gridSize));
         gridSizeDisplay.setMinimumSize(new Dimension(60, 50));
         gridSizeDisplay.setEnabled(false);
