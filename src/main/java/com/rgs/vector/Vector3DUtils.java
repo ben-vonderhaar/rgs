@@ -1,4 +1,4 @@
-package com.rgs.common;
+package com.rgs.vector;
 
 public class Vector3DUtils {
 

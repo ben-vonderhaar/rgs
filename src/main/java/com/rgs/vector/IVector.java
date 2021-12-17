@@ -1,4 +1,4 @@
-package com.rgs.common;
+package com.rgs.vector;
 
 public interface IVector {
     double getLength();

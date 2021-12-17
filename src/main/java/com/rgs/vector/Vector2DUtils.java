@@ -1,4 +1,4 @@
-package com.rgs.common;
+package com.rgs.vector;
 
 /**
  * @author <a href="mailto:benjamin.m.vonderhaar@gmail.com">[Ben VonDerHaar]</a>

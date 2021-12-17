@@ -2,12 +2,12 @@ package com.rgs.demo;
 
 import javax.swing.*;
 
-import com.rgs.render3d.CubeInPerspective;
+import com.rgs.render3d.Teapot;
 
-public class CubeGameLoop {
+public class TeapotDemo {
 
     public static void main(String[] args) {
-        GameLoop gameLoop = new GameLoop(new CubeInPerspective());
+        DemoRenderLoop gameLoop = new DemoRenderLoop(new Teapot());
         new Timer(1000 / 30, gameLoop).start();
     }
 }

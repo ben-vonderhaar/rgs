@@ -6,8 +6,8 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 import com.rgs.common.Tri;
-import com.rgs.common.Vector3D;
-import com.rgs.common.Vector3DUtils;
+import com.rgs.vector.Vector3D;
+import com.rgs.vector.Vector3DUtils;
 
 public class Camera {
 
@@ -108,29 +108,30 @@ public class Camera {
 
         g.setColor(Color.CYAN);
         // Z Axis
-        IntStream.range(0, 7).forEach(i -> drawPoint(g, new Vector3D(0, 0, 1.5 - (i * 0.5))));
+        IntStream.range(0, 101).forEach(i -> drawPoint(g, new Vector3D(0, 0, 50 - (i * 0.5))));
 
         g.setColor(Color.ORANGE);
-        drawPoint(g, new Vector3D(0, 0, 1.5));
+        drawPoint(g, new Vector3D(0, 0, 50.5));
 
         g.setColor(Color.GREEN);
         // Y Axis
-        IntStream.range(0, 7).forEach(i -> drawPoint(g, new Vector3D(0, 1.5 - (i * 0.5), 0)));
+        IntStream.range(0, 101).forEach(i -> drawPoint(g, new Vector3D(0, 50 - (i * 0.5), 0)));
 
         g.setColor(Color.ORANGE);
-        drawPoint(g, new Vector3D(0, 1.5, 0));
+        drawPoint(g, new Vector3D(0, 50.5, 0));
 
         g.setColor(Color.RED);
         // X Axis
-        IntStream.range(0, 6).forEach(i -> drawPoint(g, new Vector3D(1.5 - (i * 0.5), 0, 0)));
+        IntStream.range(0, 101).forEach(i -> drawPoint(g, new Vector3D(50 - (i * 0.5), 0, 0)));
 
         g.setColor(Color.ORANGE);
-        drawPoint(g, new Vector3D(1.5, 0, 0));
+        drawPoint(g, new Vector3D(50.5, 0, 0));
     }
 
     public void drawTris(Graphics g) {
         g.setColor(Color.YELLOW);
         for(Tri tri : TrisInWorld.getTris()) {
+            //System.out.println(tri);
             drawLineBetweenPoints(g, tri.getP0(), tri.getP1());
             drawLineBetweenPoints(g, tri.getP1(), tri.getP2());
             drawLineBetweenPoints(g, tri.getP2(), tri.getP0());
@@ -161,15 +162,17 @@ public class Camera {
         // Accommodating for direction needs component-specific cos/sin calcs
         double cos = Math.cos(0.0);
         double sin = Math.sin(0.0);
+        double cosZ = cos;//Math.cos(Math.PI);
+        double sinZ = sin;//Math.sin(Math.PI);
 
         //c_y * (s_z * y + c_z * x) - s_y * z
-        double transformedX = cos * (sin * diff.getY() + cos * diff.getX()) - sin * diff.getZ();
+        double transformedX = cos * (sinZ * diff.getY() + cosZ * diff.getX()) - sin * diff.getZ();
 
         //s_x * (c_y * z + s_y * (s_z * y + c_z * x)) + c_x * (c_z * y - s_z * x)
-        double transformedY = sin * (cos * diff.getZ() + sin * (sin * diff.getY() + cos * diff.getX())) + cos * (cos * diff.getY() - sin * diff.getX());
+        double transformedY = sin * (cos * diff.getZ() + sin * (sinZ * diff.getY() + cosZ * diff.getX())) + cos * (cosZ * diff.getY() - sinZ * diff.getX());
 
         //c_x * (c_y * z + s_y * (s_z * y + c_z * x)) - s_x * (c_z * y - s_z * x)
-        double transformedZ = cos * (cos * diff.getZ() + sin * (sin * diff.getY() + cos * diff.getX())) - sin * (cos * diff.getY() - sin * diff.getX());
+        double transformedZ = cos * (cos * diff.getZ() + sin * (sinZ * diff.getY() + cosZ * diff.getX())) - sin * (cosZ * diff.getY() - sinZ * diff.getX());
 
         double displayX = (viewingPlanePoint.getZ() / transformedZ) * transformedX + viewingPlanePoint.getX();
         double displayY = (viewingPlanePoint.getZ() / transformedZ) * transformedY + viewingPlanePoint.getY();
@@ -178,8 +181,8 @@ public class Camera {
         int xOffset = 400 /*panel.getWidth()*/ / 2;
         int yOffset = 400 /*panel.getHeight()*/ / 2;
 
-        int finalX = 425 + (int)(displayX * 100);
-        int finalY = 725 - (int)(displayY * 100);
+        int finalX = 225 + (int)(displayX);
+        int finalY = 225 - (int)(displayY);
 
         g.drawLine(finalX,
                    finalY,
@@ -188,8 +191,8 @@ public class Camera {
     }
 
     public void setInProgressTranslation(int translationX, int translationY) {
-        this.tempTranslationX = (int) (translationX / 50.0);
-        this.tempTranslationY = (int) (translationY / 50.0);
+        this.tempTranslationX = (int) (translationX);
+        this.tempTranslationY = (int) (translationY);
     }
 
     public void clearInProgressTranslation() {

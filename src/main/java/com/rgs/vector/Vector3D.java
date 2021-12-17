@@ -1,4 +1,4 @@
-package com.rgs.common;
+package com.rgs.vector;
 
 import java.util.Objects;
 
@@ -60,6 +60,12 @@ public class Vector3D implements IVector {
 
     public double dot(Vector3D that) {
         return this.x * that.getX() + this.y * that.getY() + this.z * that.getZ();
+    }
+
+    public Vector3D cross(Vector3D that) {
+        return Vector3D.of(this.y * that.z - this.z * that.y,
+                           this.z * that.x - this.x * that.z,
+                           this.x * that.y - this.y * that.x);
     }
 
     @Override

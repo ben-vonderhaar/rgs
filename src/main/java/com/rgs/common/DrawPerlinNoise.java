@@ -2,15 +2,18 @@ package com.rgs.common;
 
 import static com.rgs.common.PerlinNoiseDistribution.gradientAt;
 import static com.rgs.common.PerlinNoiseDistribution.permFromVector2D;
-import static com.rgs.common.Vector2DUtils.dotProduct;
-import static com.rgs.common.Vector2DUtils.smoothstepValue;
+import static com.rgs.vector.Vector2DUtils.dotProduct;
+import static com.rgs.vector.Vector2DUtils.smoothstepValue;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-public class DrawPerlinNoise extends GameReadyPanel {
+import com.rgs.vector.Vector2D;
+import com.rgs.vector.Vector2DUtils;
+
+public class DrawPerlinNoise extends DemoReadyPanel {
 
     private static final int TABLE_SIZE = 256;
     private static final int TABLE_SIZE_MASK = TABLE_SIZE - 1;

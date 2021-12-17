@@ -4,13 +4,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import com.rgs.common.GameReadyPanel;
+import com.rgs.common.DemoReadyPanel;
 
-public class GameLoop implements ActionListener {
+public class DemoRenderLoop
+    implements ActionListener {
 
-    private final GameReadyPanel panel;
+    private final DemoReadyPanel panel;
 
-    public GameLoop(GameReadyPanel panel) {
+    public DemoRenderLoop(DemoReadyPanel panel) {
         this.panel = panel;
         this.panel.setBackground(Color.BLACK);
     }

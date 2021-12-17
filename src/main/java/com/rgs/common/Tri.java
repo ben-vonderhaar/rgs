@@ -2,6 +2,8 @@ package com.rgs.common;
 
 import java.util.List;
 
+import com.rgs.vector.Vector3D;
+
 public class Tri {
 
     private Vector3D p0, p1, p2;
@@ -29,7 +31,16 @@ public class Tri {
                        new Tri(p1, p2, p3));
     }
 
+    public static Tri of(Vector3D p0, Vector3D p1, Vector3D p2) {
+        return new Tri(p0, p1, p2);
+    }
+
     public List<Vector3D> getPoints() {
         return List.of(p0, p1, p2);
+    }
+
+    @Override
+    public String toString() {
+        return "Tri{" + "p0=" + p0 + ", p1=" + p1 + ", p2=" + p2 + '}';
     }
 }

@@ -1,9 +1,11 @@
 package com.rgs.common;
 
-import static com.rgs.common.Vector2DUtils.randomVector2D;
+import static com.rgs.vector.Vector2DUtils.randomVector2D;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.rgs.vector.Vector2D;
 
 public class PerlinNoiseDistribution {
 

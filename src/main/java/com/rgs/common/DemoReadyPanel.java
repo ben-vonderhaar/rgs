@@ -11,11 +11,12 @@ import javax.swing.*;
  * Each demo JPanel must implement the tick method and can override whichever event
  * handlers are appropriate for a given demo.
  */
-public abstract class GameReadyPanel extends JPanel implements MouseListener, MouseMotionListener {
+public abstract class DemoReadyPanel
+    extends JPanel implements MouseListener, MouseMotionListener {
 
     public abstract void tick();
 
-    protected GameReadyPanel() {
+    protected DemoReadyPanel() {
         addMouseListener(this);
         addMouseMotionListener(this);
     }

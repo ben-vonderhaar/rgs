@@ -10,6 +10,10 @@ public class TrisInWorld {
 
     private static final Set<Tri> triSet = new HashSet<>();
 
+    public static void addTri(Tri tri) {
+        triSet.add(tri);
+    }
+
     public static void addTris(List<Tri> tris) {
         triSet.addAll(tris);
     }
