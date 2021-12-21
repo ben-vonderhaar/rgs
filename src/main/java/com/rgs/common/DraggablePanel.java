@@ -59,9 +59,8 @@ public abstract class DraggablePanel extends DemoReadyPanel {
         super.mouseDragged(e);
 
         if (e.getButton() == BUTTON2 && isDragging) {
-            //System.out.println("X travel: " + (e.getX() - this.dragStartX));
-            //System.out.println("Y travel: " + (e.getY() - this.dragStartY));
-            this.camera.setInProgressTranslation((e.getX() - this.dragStartX), (e.getY() - this.dragStartY));
+            // TODO add scaling
+            this.camera.setInProgressTranslation((e.getX() - this.dragStartX), (e.getY() - this.dragStartY), 0);
         }
     }
 }

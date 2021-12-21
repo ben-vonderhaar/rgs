@@ -9,14 +9,14 @@ import java.util.List;
 
 import javax.swing.*;
 
-import com.rgs.common.DraggablePanel;
 import com.rgs.common.Tri;
+import com.rgs.common.WASDPanel;
 import com.rgs.vector.Vector3D;
 
-public class Teapot extends DraggablePanel {
+public class Teapot extends WASDPanel {
 
     public Teapot() {
-        super(new Camera(Vector3D.of(-10, 3, -100),
+        super(new Camera(Vector3D.of(-30, -30, -100),
                          Vector3D.of(0, 0, 1),
                          5));
 

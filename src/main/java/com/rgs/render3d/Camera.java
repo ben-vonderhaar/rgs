@@ -19,7 +19,9 @@ public class Camera {
     private Vector3D viewingPlanePoint;
     private double viewingPlaneConstant;
 
-    private int tempTranslationX = 0, tempTranslationY = 0;
+    private int tempTranslationX = 0, tempTranslationY = 0, tempTranslationZ = 0;
+    private double orientationX = 0, orientationY = 0;
+    private double tempOrientationX = 0, tempOrientationY = 0;
 
     public Camera(Vector3D position, Vector3D direction, double focalLength) {
 
@@ -156,23 +158,25 @@ public class Camera {
     private void drawPoint(Graphics g, Vector3D point) {
 
         viewingPlaneIntersectionToPoint(point);
-        Vector3D diff = point.subtract(this.position.add(Vector3D.of(this.tempTranslationX, -1 * this.tempTranslationY, 0)));
+        Vector3D diff = point.subtract(this.position.add(Vector3D.of(this.tempTranslationX, -1 * this.tempTranslationY, this.tempTranslationZ)));
 
         // Assuming looking straight forward aka (0,0,0) direction vector
         // Accommodating for direction needs component-specific cos/sin calcs
-        double cos = Math.cos(0.0);
-        double sin = Math.sin(0.0);
-        double cosZ = cos;//Math.cos(Math.PI);
-        double sinZ = sin;//Math.sin(Math.PI);
+        double cosX = Math.cos(0.0);
+        double sinX = Math.sin(0.0);
+        double cosY = Math.cos((orientationX + tempOrientationX) % (2 * Math.PI));
+        double sinY = Math.sin((orientationX + tempOrientationX) % (2 * Math.PI));
+        double cosZ = Math.cos(0.0);
+        double sinZ = Math.sin(0.0);
 
-        //c_y * (s_z * y + c_z * x) - s_y * z
-        double transformedX = cos * (sinZ * diff.getY() + cosZ * diff.getX()) - sin * diff.getZ();
+                           // c_y  * (s_z  * y           + c_z  * x)           - s_y  * z
+        double transformedX = cosY * (sinZ * diff.getY() + cosZ * diff.getX()) - sinY * diff.getZ();
 
-        //s_x * (c_y * z + s_y * (s_z * y + c_z * x)) + c_x * (c_z * y - s_z * x)
-        double transformedY = sin * (cos * diff.getZ() + sin * (sinZ * diff.getY() + cosZ * diff.getX())) + cos * (cosZ * diff.getY() - sinZ * diff.getX());
+                           // s_x  * (c_y  * z           + s_y  * (s_z  * y           + c_z  * x))           + c_x  * (c_z  * y           - s_z  * x)
+        double transformedY = sinX * (cosY * diff.getZ() + sinY * (sinZ * diff.getY() + cosZ * diff.getX())) + cosX * (cosZ * diff.getY() - sinZ * diff.getX());
 
-        //c_x * (c_y * z + s_y * (s_z * y + c_z * x)) - s_x * (c_z * y - s_z * x)
-        double transformedZ = cos * (cos * diff.getZ() + sin * (sinZ * diff.getY() + cosZ * diff.getX())) - sin * (cosZ * diff.getY() - sinZ * diff.getX());
+                           // c_x  * (c_y  * z           + s_y  * (s_z  * y           + c_z  * x))           - s_x  * (c_z  * y           - s_z  * x)
+        double transformedZ = cosX * (cosY * diff.getZ() + sinY * (sinZ * diff.getY() + cosZ * diff.getX())) - sinX * (cosZ * diff.getY() - sinZ * diff.getX());
 
         double displayX = (viewingPlanePoint.getZ() / transformedZ) * transformedX + viewingPlanePoint.getX();
         double displayY = (viewingPlanePoint.getZ() / transformedZ) * transformedY + viewingPlanePoint.getY();
@@ -190,18 +194,31 @@ public class Camera {
                    finalY);
     }
 
-    public void setInProgressTranslation(int translationX, int translationY) {
+    public void setInProgressTranslation(int translationX, int translationY, int translationZ) {
         this.tempTranslationX = (int) (translationX);
         this.tempTranslationY = (int) (translationY);
+        this.tempTranslationZ = (int) (translationZ);
     }
 
     public void clearInProgressTranslation() {
-        this.position = this.position.add(Vector3D.of(this.tempTranslationX, -1 * tempTranslationY, 0));
+        this.position = this.position.add(Vector3D.of(this.tempTranslationX, -1 * tempTranslationY, this.tempTranslationZ));
 
         this.tempTranslationX = 0;
         this.tempTranslationY = 0;
+        this.tempTranslationZ = 0;
     }
 
-    // TODO find intersection of resulting vector and a plane
+    public void setInProgressOrientation(double orientationX, double orientationY) {
+        this.tempOrientationX = orientationX;
+        this.tempOrientationY = orientationY;
+    }
+
+    public void clearInProgressOrientation() {
+        this.orientationX = (this.orientationX + this.tempOrientationX) % (2 * Math.PI);
+        this.orientationY = (this.orientationY + this.tempOrientationY) % (2 * Math.PI);
+
+        this.tempOrientationX = 0;
+        this.tempOrientationY = 0;
+    }
 
 }
