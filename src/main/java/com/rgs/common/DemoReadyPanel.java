@@ -1,9 +1,12 @@
 package com.rgs.common;
 
-import java.awt.event.ActionEvent;
+import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.*;
 
@@ -17,51 +20,24 @@ public abstract class DemoReadyPanel
 
     public abstract void tick();
 
+    private Set<Integer> keysCurrentlyDown = new HashSet<>();
+
     protected DemoReadyPanel() {
         addMouseListener(this);
         addMouseMotionListener(this);
 
-        InputMap inputMap = this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
-        ActionMap actionMap = this.getActionMap();
-
-        // TODO make this cleaner
-
-        KeyStroke aKeyStroke = KeyStroke.getKeyStroke('a');
-        KeyStroke dKeyStroke = KeyStroke.getKeyStroke('d');
-        KeyStroke wKeyStroke = KeyStroke.getKeyStroke('w');
-        KeyStroke sKeyStroke = KeyStroke.getKeyStroke('s');
-
-        inputMap.put(aKeyStroke, "a");
-        inputMap.put(dKeyStroke, "d");
-        inputMap.put(wKeyStroke, "w");
-        inputMap.put(sKeyStroke, "s");
-
-        actionMap.put("a", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                keyPressed(aKeyStroke);
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+            if (e.getID() == KeyEvent.KEY_PRESSED) {
+                if (!keysCurrentlyDown.contains(e.getKeyCode())) {
+                    keysCurrentlyDown.add(e.getKeyCode());
+                    keyPressed(KeyStroke.getKeyStroke((char) e.getKeyCode()));
+                }
+            } else if (e.getID() == KeyEvent.KEY_RELEASED) {
+                keysCurrentlyDown.remove(e.getKeyCode());
+                keyReleased(KeyStroke.getKeyStroke((char) e.getKeyCode()));
             }
-        });
 
-        actionMap.put("d", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                keyPressed(dKeyStroke);
-            }
-        });
-
-        actionMap.put("w", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                keyPressed(wKeyStroke);
-            }
-        });
-
-        actionMap.put("s", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                keyPressed(sKeyStroke);
-            }
+            return false;
         });
     }
 
