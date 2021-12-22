@@ -1,5 +1,8 @@
 package com.rgs.render3d;
 
+import static com.rgs.vector.Vector3DUtils.cross;
+import static com.rgs.vector.Vector3DUtils.dot;
+
 import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +22,9 @@ public class Camera {
     private Vector3D viewingPlanePoint;
     private double viewingPlaneConstant;
 
-    private int tempTranslationX = 0, tempTranslationY = 0, tempTranslationZ = 0;
+    private double tempTranslationX = 0, tempTranslationY = 0, tempTranslationZ = 0;
+
+    // TODO improve naming
     private double orientationX = 0, orientationY = 0;
     private double tempOrientationX = 0, tempOrientationY = 0;
 
@@ -29,9 +34,6 @@ public class Camera {
 
         this.position = position;
         this.direction = direction.normalize();
-        // TODO get x, y, z rotation angles from direction vector
-        // TODO then https://en.wikipedia.org/wiki/3D_projection#Mathematical_formula
-        // Quaternion from two Vector3D
         this.focalLength = focalLength;
 
         // find point on viewing plane
@@ -46,6 +48,14 @@ public class Camera {
         viewingPlaneConstant = this.direction.dot(viewingPlanePoint);
 
         System.out.println("viewing plane constant: " + viewingPlaneConstant);
+    }
+
+    public double getOrientationX() {
+        return (this.orientationX + this.tempOrientationX) % (2 * Math.PI);
+    }
+
+    public Vector3D getDirection() {
+        return this.direction;
     }
 
     public Vector3D vectorTo(Vector3D point) {
@@ -160,8 +170,7 @@ public class Camera {
         viewingPlaneIntersectionToPoint(point);
         Vector3D diff = point.subtract(this.position.add(Vector3D.of(this.tempTranslationX, -1 * this.tempTranslationY, this.tempTranslationZ)));
 
-        // Assuming looking straight forward aka (0,0,0) direction vector
-        // Accommodating for direction needs component-specific cos/sin calcs
+        // TODO "Y" orientation i.e. looking up and down
         double cosX = Math.cos(0.0);
         double sinX = Math.sin(0.0);
         double cosY = Math.cos((orientationX + tempOrientationX) % (2 * Math.PI));
@@ -178,8 +187,8 @@ public class Camera {
                            // c_x  * (c_y  * z           + s_y  * (s_z  * y           + c_z  * x))           - s_x  * (c_z  * y           - s_z  * x)
         double transformedZ = cosX * (cosY * diff.getZ() + sinY * (sinZ * diff.getY() + cosZ * diff.getX())) - sinX * (cosZ * diff.getY() - sinZ * diff.getX());
 
-        double displayX = (viewingPlanePoint.getZ() / transformedZ) * transformedX + viewingPlanePoint.getX();
-        double displayY = (viewingPlanePoint.getZ() / transformedZ) * transformedY + viewingPlanePoint.getY();
+        double displayX = (transformedX  / transformedZ) * viewingPlanePoint.getZ() * focalLength * -1 + viewingPlanePoint.getX();
+        double displayY = (transformedY / transformedZ) * viewingPlanePoint.getZ() * focalLength * -1 + viewingPlanePoint.getY();
 
         // TODO configurable/dynamic offsets
         int xOffset = 400 /*panel.getWidth()*/ / 2;
@@ -194,10 +203,10 @@ public class Camera {
                    finalY);
     }
 
-    public void setInProgressTranslation(int translationX, int translationY, int translationZ) {
-        this.tempTranslationX = (int) (translationX);
-        this.tempTranslationY = (int) (translationY);
-        this.tempTranslationZ = (int) (translationZ);
+    public void setInProgressTranslation(double translationX, double translationY, double translationZ) {
+        this.tempTranslationX = translationX;
+        this.tempTranslationY = translationY;
+        this.tempTranslationZ = translationZ;
     }
 
     public void clearInProgressTranslation() {
@@ -208,17 +217,40 @@ public class Camera {
         this.tempTranslationZ = 0;
     }
 
+    public void doInstantTranslation(Vector3D translation) {
+        this.position = this.position.add(translation);
+    }
+
     public void setInProgressOrientation(double orientationX, double orientationY) {
         this.tempOrientationX = orientationX;
         this.tempOrientationY = orientationY;
+
+        getActualDirectionVector(orientationX, orientationY);
     }
 
     public void clearInProgressOrientation() {
         this.orientationX = (this.orientationX + this.tempOrientationX) % (2 * Math.PI);
         this.orientationY = (this.orientationY + this.tempOrientationY) % (2 * Math.PI);
 
+        this.direction = getActualDirectionVector(this.tempOrientationX, this.tempOrientationY);
+
+        // TODO derive orientationX and orientationY (with better names) from direction vector
+
         this.tempOrientationX = 0;
         this.tempOrientationY = 0;
+
+    }
+
+    private Vector3D getActualDirectionVector(double additionalZAxisRotation, double additionalXAxisRotation) {
+        // Until codebase fully converted, these equivalences must be kept in mind
+        // additionalZAxisRotation = orientationX
+        // additionalXAxisRotation = orientationY
+
+        // v_rot = cos(theta)*v + sin(theta)*(e x v) + (1 - cos(theta))*(e . v)*e
+        return this.direction.scale(Math.cos(-1 * additionalZAxisRotation))
+            .add(cross(this.direction, Vector3D.UP).scale(Math.sin(-1 * additionalZAxisRotation)))
+            .add(Vector3D.UP.scale((1 - Math.cos(additionalZAxisRotation)) * dot(this.direction, Vector3D.UP)))
+            .normalize();
     }
 
 }

@@ -16,9 +16,9 @@ import com.rgs.vector.Vector3D;
 public class Teapot extends WASDPanel {
 
     public Teapot() {
-        super(new Camera(Vector3D.of(-30, -30, -100),
+        super(new Camera(Vector3D.of(30, 60, 100),
                          Vector3D.of(0, 0, 1),
-                         5));
+                         2));
 
         this.setBackground(Color.BLACK);
         var frame = new JFrame("HTTP 418");
@@ -43,7 +43,7 @@ public class Teapot extends WASDPanel {
                 if (lineNumber > countsLineNumber && lineNumber <= countsLineNumber + numPoints) {
                     System.out.println("point: " + line);
                     String[] coords = line.replaceAll("\\s+", ",").split(",");
-                    points.add(Vector3D.of(-100 * Double.parseDouble(coords[1]), -100 * Double.parseDouble(coords[2]), 100 * Double.parseDouble(coords[0])));
+                    points.add(Vector3D.of(50 + 100 * Double.parseDouble(coords[0]), 100 * Double.parseDouble(coords[2]), 100 * Double.parseDouble(coords[1])));
                 } else if (lineNumber > countsLineNumber && lineNumber <= countsLineNumber + numPoints + numFaces) {
                     System.out.println("quad: " + line);
                     String[] vertices = line.replaceAll("\\s+", ",").split(",");

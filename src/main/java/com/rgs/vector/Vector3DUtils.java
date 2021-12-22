@@ -7,4 +7,16 @@ public class Vector3DUtils {
                             Vector2DUtils.lerp(v0.getY(), v1.getY(), t),
                             Vector2DUtils.lerp(v0.getZ(), v1.getZ(), t));
     }
+
+    public static Vector3D cross(Vector3D v0, Vector3D v1) {
+        return Vector3D.of(v0.getY() * v1.getZ() - v0.getZ() * v1.getY(),
+                           v0.getZ() * v1.getX() - v0.getX() * v1.getZ(),
+                           v0.getX() * v1.getY() - v0.getY() * v1.getX());
+    }
+
+    public static double dot(Vector3D v0, Vector3D v1) {
+        return v0.getX() * v1.getX()
+             + v0.getY() * v1.getY()
+             + v0.getZ() * v1.getZ();
+    }
 }

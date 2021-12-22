@@ -7,6 +7,8 @@ public class Vector3D implements IVector {
     private double x, y, z;
     private double length;
 
+    public static Vector3D UP = new Vector3D(0, 1, 0);
+
     public Vector3D(double x, double y, double z) {
         this.x = x;
         this.y = y;
@@ -58,6 +60,7 @@ public class Vector3D implements IVector {
             /* 0 + */ (sinDegrees * this.y) + (cosDegrees + this.z));
     }
 
+    // TODO use Vector3D Utils for dot and cross
     public double dot(Vector3D that) {
         return this.x * that.getX() + this.y * that.getY() + this.z * that.getZ();
     }

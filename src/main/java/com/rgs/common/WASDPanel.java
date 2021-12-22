@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.*;
 
 import com.rgs.render3d.Camera;
+import com.rgs.vector.Vector3D;
 
 public abstract class WASDPanel extends DemoReadyPanel {
 
@@ -23,7 +24,7 @@ public abstract class WASDPanel extends DemoReadyPanel {
 
     @Override
     public void tick() {
-        // TODO
+        // TODO for optimization?
         //camera.recalculateLocalCoords();
         repaint();
     }
@@ -66,7 +67,7 @@ public abstract class WASDPanel extends DemoReadyPanel {
 
             // 400px for 180 rotation
             // currently only X orientation
-            double tempOrientationX = ((e.getX() - this.lookStartX) / 400.0) * Math.PI;
+            double tempOrientationX = ((e.getX() - this.lookStartX) / -400.0) * Math.PI;
 
             this.camera.setInProgressOrientation(tempOrientationX, 0);
         }
@@ -75,22 +76,21 @@ public abstract class WASDPanel extends DemoReadyPanel {
     @Override
     public void keyPressed(KeyStroke e) {
 
+        Vector3D cameraDirection = this.camera.getDirection();
+        Vector3D orthonormal = cameraDirection.cross(Vector3D.UP);
+
         switch (e.getKeyChar()) {
             case 'a':
-                this.camera.setInProgressTranslation(-10, 0, 0);
-                this.camera.clearInProgressTranslation();
+                this.camera.doInstantTranslation(orthonormal.normalize().scale(10));
                 break;
             case 'd':
-                this.camera.setInProgressTranslation(10, 0, 0);
-                this.camera.clearInProgressTranslation();
+                this.camera.doInstantTranslation(orthonormal.normalize().scale(-10));
                 break;
             case 'w':
-                this.camera.setInProgressTranslation(0, 0, 10);
-                this.camera.clearInProgressTranslation();
+                this.camera.doInstantTranslation(cameraDirection.normalize().scale(-10));
                 break;
             case 's':
-                this.camera.setInProgressTranslation(0, 0, -10);
-                this.camera.clearInProgressTranslation();
+                this.camera.doInstantTranslation(cameraDirection.normalize().scale(10));
                 break;
             default:
                 System.out.println(e.getKeyCode() + " typed - unknown");
